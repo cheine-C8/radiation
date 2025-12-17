@@ -8,107 +8,115 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        body { background-color: #0f172a; color: white; }
+        ::-webkit-scrollbar-track { background: var(--scroll-track, #f1f5f9); }
+        ::-webkit-scrollbar-thumb { background: var(--scroll-thumb, #cbd5e1); border-radius: 4px; }
+        body { transition: background-color 0.3s, color 0.3s; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen font-sans p-4">
+<body id="app-body" class="flex flex-col items-center justify-center min-h-screen font-sans p-4 bg-slate-50 text-slate-900 transition-colors duration-300">
 
-    <div class="w-full max-w-4xl bg-slate-800 rounded-xl shadow-2xl overflow-hidden border border-slate-700">
+    <div id="app-container" class="w-full max-w-4xl bg-white rounded-xl shadow-xl overflow-hidden border border-slate-200 transition-colors duration-300">
         
         <!-- Header -->
-        <div class="bg-slate-950 p-6 border-b border-slate-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div id="app-header" class="bg-slate-50 p-6 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-colors duration-300">
             <div>
-                <h1 class="text-2xl font-bold flex items-center gap-2">
-                    <i data-lucide="activity" class="text-green-400"></i>
+                <h1 id="app-title" class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                    <i data-lucide="activity" class="text-green-600"></i>
                     Radiation Penetration Lab
                 </h1>
-                <p class="text-slate-400 text-sm mt-1">Explore how different particles interact with matter</p>
+                <p id="app-subtitle" class="text-slate-500 text-sm mt-1">Explore how different particles interact with matter</p>
             </div>
             
             <div class="flex flex-col items-end gap-2 w-full md:w-auto">
-                <div class="flex items-center gap-4 bg-slate-900 px-5 py-3 rounded-xl border border-slate-700 shadow-inner justify-between w-full md:w-auto">
-                    <!-- Metric Display -->
-                    <div class="flex flex-col items-end min-w-[140px]">
-                        <div class="flex items-end gap-2">
-                            <span id="metric-value" class="text-4xl font-mono font-bold leading-none text-green-400">0</span>
-                            <span id="metric-label" class="text-sm font-bold text-slate-500 mb-1">CPM</span>
+                <div class="flex items-center gap-2 w-full justify-end">
+                    <!-- Metric Box -->
+                    <div id="metric-box" class="flex items-center gap-4 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm transition-colors duration-300">
+                        <div class="flex flex-col items-end min-w-[120px]">
+                            <div class="flex items-end gap-2">
+                                <span id="metric-value" class="text-3xl font-mono font-bold leading-none text-green-600">0</span>
+                                <span id="metric-label" class="text-sm font-bold text-slate-400 mb-1">CPM</span>
+                            </div>
+                            <div id="metric-name" class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">
+                                Counts Per Minute
+                            </div>
                         </div>
-                        <div id="metric-name" class="text-[10px] text-slate-600 uppercase tracking-widest mt-1">
-                            Counts Per Minute
-                        </div>
+                        <div class="h-10 w-px bg-slate-200 mx-2 transition-colors duration-300" id="metric-divider"></div>
+                        <button id="btn-reset" class="p-2 hover:bg-slate-100 rounded-full transition-colors group" title="Reset Counter">
+                            <i data-lucide="rotate-ccw" class="w-5 h-5 text-slate-400 group-hover:text-slate-600"></i>
+                        </button>
                     </div>
-                    <div class="h-10 w-px bg-slate-700 mx-2"></div>
-                    <button id="btn-reset" class="p-2 hover:bg-slate-800 rounded-full transition-colors group" title="Reset Counter">
-                        <i data-lucide="rotate-ccw" class="w-5 h-5 text-slate-500 group-hover:text-slate-300"></i>
+
+                    <!-- Theme Toggle -->
+                    <button id="btn-theme" class="p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 text-slate-500 transition-all duration-300" title="Toggle Theme">
+                        <i data-lucide="moon" class="w-5 h-5"></i>
                     </button>
                 </div>
+
                 <!-- Unit Selector -->
-                <div class="flex bg-slate-900 rounded-lg p-1 border border-slate-700 gap-1" id="unit-selector"></div>
+                <div class="flex bg-slate-100 rounded-lg p-1 border border-slate-200 gap-1 transition-colors duration-300" id="unit-selector"></div>
             </div>
         </div>
 
         <!-- Toolbar / View Toggle -->
-        <div class="bg-slate-900 border-b border-slate-700 px-6 py-2 flex justify-between items-center">
+        <div id="toolbar" class="bg-slate-100 border-b border-slate-200 px-6 py-2 flex justify-between items-center transition-colors duration-300">
             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Simulation View</span>
-            <div class="flex bg-slate-800 rounded-lg p-1 border border-slate-600">
+            <div id="view-toggle-container" class="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm transition-colors duration-300">
                 <button id="btn-view-lab" class="px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm">
                     <i data-lucide="flask-conical" class="w-3 h-3"></i> Lab View
                 </button>
-                <button id="btn-view-atomic" class="px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 text-slate-400 hover:text-white">
+                <button id="btn-view-atomic" class="px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50">
                     <i data-lucide="microscope" class="w-3 h-3"></i> Atomic View
                 </button>
             </div>
         </div>
 
         <!-- Main Canvas Area -->
-        <div class="relative bg-black w-full h-[400px] border-b border-slate-700 shadow-inner overflow-hidden">
-            <canvas id="simCanvas" width="800" height="400" class="w-full h-full object-contain"></canvas>
+        <div id="canvas-container" class="relative bg-slate-50 w-full h-[360px] border-b border-slate-200 shadow-inner overflow-hidden transition-colors duration-300">
+            <canvas id="simCanvas" width="800" height="360" class="w-full h-full object-contain"></canvas>
             
             <!-- Legend Overlay -->
-            <div id="legend-overlay" class="absolute top-4 left-4 bg-slate-900/80 backdrop-blur p-3 rounded-lg border border-slate-700 text-xs shadow-lg transition-opacity duration-300">
+            <div id="legend-overlay" class="absolute top-4 left-4 bg-white/90 backdrop-blur p-3 rounded-lg border border-slate-200 text-slate-700 text-xs shadow-md transition-all duration-300">
                 <div class="flex items-center gap-2 mb-1">
-                    <span class="w-3 h-3 rounded-full bg-[#FF5252]"></span> Alpha
+                    <span id="legend-alpha" class="w-3 h-3 rounded-full bg-[#ef4444]"></span> Alpha
                 </div>
                 <div class="flex items-center gap-2 mb-1">
-                    <span class="w-3 h-3 rounded-full bg-[#448AFF]"></span> Beta
+                    <span id="legend-beta" class="w-3 h-3 rounded-full bg-[#3b82f6]"></span> Beta
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-[#69F0AE]"></span> Gamma
+                    <span id="legend-gamma" class="w-3 h-3 rounded-full bg-[#059669]"></span> Gamma
                 </div>
             </div>
 
-            <!-- Atomic Label Overlay (Hidden in Lab Mode) -->
-            <div id="atomic-label" class="absolute bottom-4 right-4 bg-slate-900/80 backdrop-blur p-3 rounded-lg border border-slate-700 text-right opacity-0 transition-opacity duration-300 pointer-events-none">
-                <div class="text-xl font-bold text-indigo-400" id="atomic-material-name">Vacuum</div>
-                <div class="text-xs text-slate-400">Magnification: 10,000,000x</div>
+            <!-- Atomic Label Overlay -->
+            <div id="atomic-label" class="absolute bottom-4 right-4 bg-white/90 backdrop-blur p-3 rounded-lg border border-slate-200 text-right opacity-0 transition-all duration-300 pointer-events-none shadow-sm">
+                <div class="text-xl font-bold text-indigo-600 transition-colors duration-300" id="atomic-material-name">Vacuum</div>
+                <div class="text-xs text-slate-500">Magnification: 10,000,000x</div>
             </div>
         </div>
 
         <!-- Controls -->
-        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-800">
+        <div id="controls-area" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white transition-colors duration-300">
             <!-- Source Selection -->
             <div>
-                <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <i data-lucide="radio" class="w-4 h-4"></i> Radiation Source
                 </h3>
                 <div class="flex gap-2" id="source-controls"></div>
-                <div class="mt-3 p-3 bg-slate-900/50 rounded-lg border border-slate-700 min-h-[80px]">
-                    <p class="text-sm text-slate-300">
-                        <span class="font-bold text-indigo-400">Physics:</span> <span id="physics-desc"></span>
+                <div id="physics-box" class="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200 min-h-[80px] transition-colors duration-300">
+                    <p id="physics-text" class="text-sm text-slate-600">
+                        <span class="font-bold text-indigo-600">Physics:</span> <span id="physics-desc"></span>
                     </p>
                 </div>
             </div>
 
             <!-- Barrier Selection -->
             <div>
-                <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <i data-lucide="shield" class="w-4 h-4"></i> Shielding Material
                 </h3>
                 <div class="grid grid-cols-4 gap-2" id="barrier-controls"></div>
                 <div class="mt-3 flex gap-2">
-                    <button id="btn-play-pause" class="flex-1 flex items-center justify-center gap-2 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg border border-slate-600 text-slate-200 transition-colors">
+                    <button id="btn-play-pause" class="flex-1 flex items-center justify-center gap-2 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-300 text-slate-700 transition-colors font-medium">
                         <i data-lucide="pause" class="w-4 h-4" id="play-icon"></i>
                         <span id="play-text">Pause Simulation</span>
                     </button>
@@ -119,11 +127,40 @@
 
     <script>
         // --- CONFIGURATION ---
+        
+        // Define dual palettes for Light (L) and Dark (D) modes
+        const THEME = {
+            light: {
+                bg: '#f8fafc', // slate-50
+                container: '#ffffff',
+                textMain: '#0f172a', // slate-900
+                textSub: '#64748b', // slate-500
+                border: '#e2e8f0', // slate-200
+                canvasBg: '#f8fafc',
+                panelBg: '#f1f5f9', // slate-100
+                overlayBg: 'rgba(255, 255, 255, 0.9)',
+                detectorFill: '#333333',
+                emitterBody: '#2a2a2a'
+            },
+            dark: {
+                bg: '#0f172a', // slate-900
+                container: '#1e293b', // slate-800
+                textMain: '#f8fafc', // slate-50
+                textSub: '#94a3b8', // slate-400
+                border: '#334155', // slate-700
+                canvasBg: '#020617', // slate-950/black
+                panelBg: '#0f172a', // slate-900
+                overlayBg: 'rgba(15, 23, 42, 0.8)',
+                detectorFill: '#1a1a1a',
+                emitterBody: '#1a1a1a'
+            }
+        };
+
         const CONFIG = {
             alpha: {
                 speed: 2,
                 spawnRate: 300,
-                color: '#FF5252',
+                colors: { light: '#ef4444', dark: '#FF5252' }, // Red
                 radius: 6,
                 label: 'Alpha (α)',
                 desc: 'Helium nuclei (2 protons, 2 neutrons). Large mass, +2 charge. Low penetration.',
@@ -132,7 +169,7 @@
             beta: {
                 speed: 5,
                 spawnRate: 150,
-                color: '#448AFF',
+                colors: { light: '#3b82f6', dark: '#448AFF' }, // Blue
                 radius: 3,
                 label: 'Beta (β)',
                 desc: 'High-energy electrons. Low mass, -1 charge. Medium penetration.',
@@ -141,7 +178,7 @@
             gamma: {
                 speed: 8,
                 spawnRate: 100,
-                color: '#69F0AE',
+                colors: { light: '#059669', dark: '#69F0AE' }, // Green (Darker in light mode)
                 radius: 2,
                 label: 'Gamma (γ)',
                 desc: 'High-energy photons/waves. No mass, no charge. High penetration.',
@@ -150,35 +187,51 @@
         };
 
         const BARRIERS = {
-            none: { width: 0, color: 'transparent', label: 'None', atomicColor: '#1e293b' },
-            paper: { width: 5, color: '#FFFFFF', label: 'Paper', atomicColor: '#a8a29e' },
-            aluminum: { width: 15, color: '#90A4AE', label: 'Aluminum', atomicColor: '#94a3b8' },
-            lead: { width: 40, color: '#37474F', label: 'Lead', atomicColor: '#475569' }
+            none: { 
+                width: 0, 
+                colors: { light: 'transparent', dark: 'transparent' }, 
+                label: 'None', 
+                atomicColors: { light: '#cbd5e1', dark: '#334155' } 
+            },
+            paper: { 
+                width: 5, 
+                colors: { light: '#d1d5db', dark: '#FFFFFF' }, 
+                label: 'Paper', 
+                atomicColors: { light: '#9ca3af', dark: '#a8a29e' } 
+            },
+            aluminum: { 
+                width: 15, 
+                colors: { light: '#94a3b8', dark: '#90A4AE' }, 
+                label: 'Aluminum', 
+                atomicColors: { light: '#64748b', dark: '#94a3b8' } 
+            },
+            lead: { 
+                width: 40, 
+                colors: { light: '#475569', dark: '#37474F' }, 
+                label: 'Lead', 
+                atomicColors: { light: '#334155', dark: '#475569' } 
+            }
         };
 
         const UNITS = {
-            cpm: { label: 'CPM', name: 'Counts Per Minute', color: 'text-green-400' },
-            cps: { label: 'CPS', name: 'Counts Per Second', color: 'text-blue-400' },
-            uSv: { label: 'μSv/h', name: 'Microsieverts/hr', color: 'text-yellow-400' },
-            mrh: { label: 'mR/h', name: 'Milliroentgens/hr', color: 'text-orange-400' }
+            cpm: { label: 'CPM', name: 'Counts Per Minute', colorClass: 'text-green-600', darkColorClass: 'text-green-400' },
+            cps: { label: 'CPS', name: 'Counts Per Second', colorClass: 'text-blue-600', darkColorClass: 'text-blue-400' },
+            uSv: { label: 'μSv/h', name: 'Microsieverts/hr', colorClass: 'text-yellow-600', darkColorClass: 'text-yellow-400' },
+            mrh: { label: 'mR/h', name: 'Milliroentgens/hr', colorClass: 'text-orange-600', darkColorClass: 'text-orange-400' }
         };
 
-        // Lab View: Chance per frame to stop
         const LAB_RATES = {
-            alpha: { paper: 0.72, aluminum: 1.0, lead: 1.0 }, // Reduced from 0.8 to allow ~1% pass
+            alpha: { paper: 0.72, aluminum: 1.0, lead: 1.0 }, 
             beta: { paper: 0.05, aluminum: 0.5, lead: 1.0 },
             gamma: { paper: 0.0, aluminum: 0.05, lead: 0.35 }
         };
 
-        // Atomic View Boundaries
-        const ATOMIC_BOUNDS = {
-            start: 200,
-            end: 600
-        };
+        const ATOMIC_BOUNDS = { start: 200, end: 600 };
 
         // --- STATE ---
         let state = {
-            viewMode: 'lab', // 'lab' or 'atomic'
+            theme: 'light', // 'light' or 'dark'
+            viewMode: 'lab', 
             radiationType: 'alpha',
             barrierType: 'none',
             isPlaying: true,
@@ -188,8 +241,8 @@
             lastHitTime: 0,
             hitHistory: [],
             totalCount: 0,
-            baseAtoms: [],    // The underlying grid points
-            activeAtoms: []   // The specific atoms currently rendered (with flash state)
+            baseAtoms: [],
+            activeAtoms: []
         };
 
         // --- DOM ELEMENTS ---
@@ -206,118 +259,181 @@
         const BARRIER_X = 400;
         const DETECTOR_X = 700;
         const CANVAS_WIDTH = 800;
-        const CANVAS_HEIGHT = 400;
+        const CANVAS_HEIGHT = 360; // Reduced height
 
         // --- INITIALIZATION ---
         function init() {
             lucide.createIcons();
+            
+            // Set initial state based on class or default
+            applyTheme('light');
+
             renderControls();
             updatePhysicsDesc();
             updateUnitDisplay();
             
             generateBaseAtoms(); 
-            updateActiveAtoms(); // Populate initial active atoms
+            updateActiveAtoms();
             
-            // Start Loops
             requestAnimationFrame(gameLoop);
             setInterval(updateMetrics, 200);
 
             // Listeners
             document.getElementById('btn-play-pause').addEventListener('click', togglePlay);
             document.getElementById('btn-reset').addEventListener('click', resetCounter);
-            
-            // View Mode Toggles
+            document.getElementById('btn-theme').addEventListener('click', toggleTheme);
             document.getElementById('btn-view-lab').addEventListener('click', () => setViewMode('lab'));
             document.getElementById('btn-view-atomic').addEventListener('click', () => setViewMode('atomic'));
         }
 
+        // --- THEME LOGIC ---
+        function toggleTheme() {
+            state.theme = state.theme === 'light' ? 'dark' : 'light';
+            applyTheme(state.theme);
+        }
+
+        function applyTheme(mode) {
+            const isDark = mode === 'dark';
+            const body = document.getElementById('app-body');
+            const container = document.getElementById('app-container');
+            const header = document.getElementById('app-header');
+            const title = document.getElementById('app-title');
+            const subtitle = document.getElementById('app-subtitle');
+            const metricBox = document.getElementById('metric-box');
+            const metricDivider = document.getElementById('metric-divider');
+            const unitSelector = document.getElementById('unit-selector');
+            const themeBtn = document.getElementById('btn-theme');
+            const toolbar = document.getElementById('toolbar');
+            const viewToggle = document.getElementById('view-toggle-container');
+            const canvasContainer = document.getElementById('canvas-container');
+            const legend = document.getElementById('legend-overlay');
+            const atomicOverlay = document.getElementById('atomic-label');
+            const atomicText = document.getElementById('atomic-material-name');
+            const controls = document.getElementById('controls-area');
+            const physicsBox = document.getElementById('physics-box');
+            const physicsText = document.getElementById('physics-text');
+            const playBtn = document.getElementById('btn-play-pause');
+
+            // Apply Classes
+            if (isDark) {
+                // Dark Mode Classes
+                body.className = "flex flex-col items-center justify-center min-h-screen font-sans p-4 bg-slate-900 text-slate-100 transition-colors duration-300";
+                container.className = "w-full max-w-4xl bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700 transition-colors duration-300";
+                header.className = "bg-slate-950 p-6 border-b border-slate-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-colors duration-300";
+                title.className = "text-2xl font-bold flex items-center gap-2 text-white";
+                subtitle.className = "text-slate-400 text-sm mt-1";
+                
+                metricBox.className = "flex items-center gap-4 bg-slate-900 px-5 py-3 rounded-xl border border-slate-700 shadow-inner transition-colors duration-300";
+                metricDivider.className = "h-10 w-px bg-slate-700 mx-2 transition-colors duration-300";
+                unitSelector.className = "flex bg-slate-900 rounded-lg p-1 border border-slate-700 gap-1 transition-colors duration-300";
+                
+                themeBtn.className = "p-3 bg-slate-900 border border-slate-700 rounded-xl shadow-sm hover:bg-slate-800 text-slate-400 hover:text-white transition-all duration-300";
+                themeBtn.innerHTML = '<i data-lucide="sun" class="w-5 h-5"></i>';
+                
+                toolbar.className = "bg-slate-900 border-b border-slate-700 px-6 py-2 flex justify-between items-center transition-colors duration-300";
+                viewToggle.className = "flex bg-slate-800 rounded-lg p-1 border border-slate-700 shadow-sm transition-colors duration-300";
+                
+                canvasContainer.className = "relative bg-black w-full h-[360px] border-b border-slate-700 shadow-inner overflow-hidden transition-colors duration-300";
+                legend.className = "absolute top-4 left-4 bg-slate-900/80 backdrop-blur p-3 rounded-lg border border-slate-700 text-slate-300 text-xs shadow-md transition-all duration-300";
+                atomicOverlay.className = "absolute bottom-4 right-4 bg-slate-900/80 backdrop-blur p-3 rounded-lg border border-slate-700 text-right opacity-0 transition-all duration-300 pointer-events-none shadow-sm";
+                atomicText.className = "text-xl font-bold text-indigo-400 transition-colors duration-300";
+
+                controls.className = "p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-800 transition-colors duration-300";
+                physicsBox.className = "mt-3 p-3 bg-slate-900/50 rounded-lg border border-slate-700 min-h-[80px] transition-colors duration-300";
+                physicsText.className = "text-sm text-slate-300";
+                
+                playBtn.className = "flex-1 flex items-center justify-center gap-2 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg border border-slate-600 text-slate-200 transition-colors font-medium";
+
+            } else {
+                // Light Mode Classes
+                body.className = "flex flex-col items-center justify-center min-h-screen font-sans p-4 bg-slate-50 text-slate-900 transition-colors duration-300";
+                container.className = "w-full max-w-4xl bg-white rounded-xl shadow-xl overflow-hidden border border-slate-200 transition-colors duration-300";
+                header.className = "bg-slate-50 p-6 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-colors duration-300";
+                title.className = "text-2xl font-bold flex items-center gap-2 text-slate-800";
+                subtitle.className = "text-slate-500 text-sm mt-1";
+
+                metricBox.className = "flex items-center gap-4 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm transition-colors duration-300";
+                metricDivider.className = "h-10 w-px bg-slate-200 mx-2 transition-colors duration-300";
+                unitSelector.className = "flex bg-slate-100 rounded-lg p-1 border border-slate-200 gap-1 transition-colors duration-300";
+
+                themeBtn.className = "p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:bg-slate-50 text-slate-500 transition-all duration-300";
+                themeBtn.innerHTML = '<i data-lucide="moon" class="w-5 h-5"></i>';
+
+                toolbar.className = "bg-slate-100 border-b border-slate-200 px-6 py-2 flex justify-between items-center transition-colors duration-300";
+                viewToggle.className = "flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm transition-colors duration-300";
+
+                canvasContainer.className = "relative bg-slate-50 w-full h-[360px] border-b border-slate-200 shadow-inner overflow-hidden transition-colors duration-300";
+                legend.className = "absolute top-4 left-4 bg-white/90 backdrop-blur p-3 rounded-lg border border-slate-200 text-slate-700 text-xs shadow-md transition-all duration-300";
+                atomicOverlay.className = "absolute bottom-4 right-4 bg-white/90 backdrop-blur p-3 rounded-lg border border-slate-200 text-right opacity-0 transition-all duration-300 pointer-events-none shadow-sm";
+                atomicText.className = "text-xl font-bold text-indigo-600 transition-colors duration-300";
+
+                controls.className = "p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white transition-colors duration-300";
+                physicsBox.className = "mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200 min-h-[80px] transition-colors duration-300";
+                physicsText.className = "text-sm text-slate-600";
+                
+                playBtn.className = "flex-1 flex items-center justify-center gap-2 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-300 text-slate-700 transition-colors font-medium";
+            }
+
+            // Update Dynamic Components
+            lucide.createIcons();
+            renderControls();
+            updateUnitDisplay();
+            updateLegendColors();
+            setViewMode(state.viewMode); // Refresh button styles
+        }
+
         function setViewMode(mode) {
             state.viewMode = mode;
+            const isDark = state.theme === 'dark';
             
             const btnLab = document.getElementById('btn-view-lab');
             const btnAtomic = document.getElementById('btn-view-atomic');
+            const atomicLabel = document.getElementById('atomic-label');
             
+            const activeClass = "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm";
+            const inactiveClass = isDark 
+                ? "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 text-slate-400 hover:text-white"
+                : "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50";
+
             if (mode === 'lab') {
-                btnLab.className = "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm";
-                btnAtomic.className = "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 text-slate-400 hover:text-white";
-                atomicLabelEl.classList.add('opacity-0');
+                btnLab.className = activeClass;
+                btnAtomic.className = inactiveClass;
+                atomicLabel.classList.add('opacity-0');
             } else {
-                btnLab.className = "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 text-slate-400 hover:text-white";
-                btnAtomic.className = "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm";
-                atomicLabelEl.classList.remove('opacity-0');
+                btnLab.className = inactiveClass;
+                btnAtomic.className = activeClass;
+                atomicLabel.classList.remove('opacity-0');
                 updateAtomicLabel();
             }
-            
-            // Clear particles when switching to avoid visual glitches
             state.particles = [];
         }
 
-        function updateAtomicLabel() {
-            atomicMaterialNameEl.textContent = state.barrierType === 'none' ? 'Vacuum' : BARRIERS[state.barrierType].label + ' Lattice';
+        function updateLegendColors() {
+            document.getElementById('legend-alpha').style.backgroundColor = CONFIG.alpha.colors[state.theme];
+            document.getElementById('legend-beta').style.backgroundColor = CONFIG.beta.colors[state.theme];
+            document.getElementById('legend-gamma').style.backgroundColor = CONFIG.gamma.colors[state.theme];
         }
 
-        // --- ATOMIC GENERATION ---
-        function generateBaseAtoms() {
-            state.baseAtoms = [];
-            // Generate a dense grid of points covering the canvas
-            for (let y = 0; y < CANVAS_HEIGHT + 50; y += 40) {
-                for (let x = 0; x < CANVAS_WIDTH + 50; x += 40) {
-                    state.baseAtoms.push({
-                        x: x + (Math.random() - 0.5) * 10,
-                        y: y + (Math.random() - 0.5) * 10,
-                        offset: Math.random() * Math.PI * 2
-                    });
-                }
-            }
-        }
-
-        function updateActiveAtoms() {
-            state.activeAtoms = [];
-            
-            // If Vacuum, no atoms in the lattice zone
-            if (state.barrierType === 'none') return;
-
-            // Density Configuration
-            let spacingX = 50;
-            let spacingY = 50;
-            let radius = 10;
-            let jitter = 0;
-            let rowOffset = false; // For hexagonal packing look
-            
-            if (state.barrierType === 'paper') { 
-                spacingX = 55; spacingY = 55; radius = 12; jitter = 15; rowOffset = false;
-            }
-            if (state.barrierType === 'aluminum') { 
-                spacingX = 40; spacingY = 40; radius = 14; jitter = 2; rowOffset = true;
-            }
-            if (state.barrierType === 'lead') { 
-                spacingX = 22; spacingY = 22; radius = 16; jitter = 1; rowOffset = true;
-            }
-
-            // Generate atoms specifically for the barrier zone
-            for (let y = 0; y < CANVAS_HEIGHT + 50; y += spacingY) {
-                let rOffset = (rowOffset && (y / spacingY) % 2 === 0) ? spacingX / 2 : 0;
-                
-                for (let x = ATOMIC_BOUNDS.start; x < ATOMIC_BOUNDS.end; x += spacingX) {
-                    state.activeAtoms.push({
-                        x: x + rOffset + (Math.random()-0.5)*jitter,
-                        y: y + (Math.random()-0.5)*jitter,
-                        offset: Math.random() * Math.PI * 2,
-                        radius: radius,
-                        flash: 0 
-                    });
-                }
-            }
-        }
-
-        // --- UI RENDERING ---
+        // --- RENDER CONTROLS (Updated for Theme) ---
         function renderControls() {
+            const isDark = state.theme === 'dark';
+
             // Source Buttons
             const sourceContainer = document.getElementById('source-controls');
             sourceContainer.innerHTML = '';
             Object.keys(CONFIG).forEach(type => {
                 const btn = document.createElement('button');
-                btn.className = `flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 border ${state.radiationType === type ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-900/50' : 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600'}`;
+                const isActive = state.radiationType === type;
+                
+                let btnClass = "flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 border ";
+                if (isActive) {
+                    btnClass += "bg-indigo-600 border-indigo-600 text-white shadow-md";
+                } else {
+                    btnClass += isDark 
+                        ? "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                        : "bg-white border-slate-300 text-slate-600 hover:bg-slate-50";
+                }
+                btn.className = btnClass;
                 btn.textContent = type.charAt(0).toUpperCase() + type.slice(1);
                 btn.onclick = () => {
                     state.radiationType = type;
@@ -332,18 +448,29 @@
             barrierContainer.innerHTML = '';
             Object.entries(BARRIERS).forEach(([key, config]) => {
                 const btn = document.createElement('button');
-                btn.className = `py-2 px-2 rounded-lg text-sm font-medium transition-all duration-200 border flex flex-col items-center justify-center gap-1 ${state.barrierType === key ? 'bg-teal-600 border-teal-500 text-white shadow-lg shadow-teal-900/50' : 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600'}`;
+                const isActive = state.barrierType === key;
+                
+                let btnClass = "py-2 px-2 rounded-lg text-sm font-medium transition-all duration-200 border flex flex-col items-center justify-center gap-1 ";
+                if (isActive) {
+                    btnClass += "bg-teal-600 border-teal-600 text-white shadow-md";
+                } else {
+                    btnClass += isDark 
+                        ? "bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                        : "bg-white border-slate-300 text-slate-600 hover:bg-slate-50";
+                }
+                btn.className = btnClass;
                 
                 const colorBox = document.createElement('div');
                 colorBox.className = "w-full h-2 rounded-sm mb-1";
-                colorBox.style.backgroundColor = config.color === 'transparent' ? '#333' : config.color;
+                colorBox.style.backgroundColor = config.colors[state.theme] === 'transparent' ? (isDark ? '#334155' : '#cbd5e1') : config.colors[state.theme];
+                if(config.colors[state.theme] === 'transparent') colorBox.style.height = '2px';
                 
                 btn.appendChild(colorBox);
                 btn.appendChild(document.createTextNode(config.label));
                 
                 btn.onclick = () => {
                     state.barrierType = key;
-                    updateActiveAtoms(); // Refresh the atom grid
+                    updateActiveAtoms();
                     renderControls();
                     updateAtomicLabel();
                 };
@@ -355,7 +482,19 @@
             unitContainer.innerHTML = '';
             Object.keys(UNITS).forEach(unit => {
                 const btn = document.createElement('button');
-                btn.className = `px-3 py-1 text-xs font-bold rounded-md transition-all ${state.selectedUnit === unit ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`;
+                const isActive = state.selectedUnit === unit;
+                
+                let btnClass = "px-3 py-1 text-xs font-bold rounded-md transition-all ";
+                if (isActive) {
+                    btnClass += isDark 
+                        ? "bg-slate-700 text-white shadow-sm"
+                        : "bg-slate-200 text-slate-900 shadow-sm";
+                } else {
+                    btnClass += isDark
+                        ? "text-slate-500 hover:text-slate-300 hover:bg-slate-800"
+                        : "text-slate-500 hover:text-slate-800 hover:bg-slate-200";
+                }
+                btn.className = btnClass;
                 btn.textContent = UNITS[unit].label;
                 btn.onclick = () => {
                     state.selectedUnit = unit;
@@ -365,7 +504,6 @@
                 unitContainer.appendChild(btn);
             });
 
-            // Play/Pause
             const playIcon = document.getElementById('play-icon');
             const playText = document.getElementById('play-text');
             if(state.isPlaying) {
@@ -378,16 +516,70 @@
             lucide.createIcons();
         }
 
+        // --- REMAINING LOGIC SAME AS BEFORE ---
+        function updateAtomicLabel() {
+            atomicMaterialNameEl.textContent = state.barrierType === 'none' ? 'Vacuum' : BARRIERS[state.barrierType].label + ' Lattice';
+        }
+
+        function generateBaseAtoms() {
+            state.baseAtoms = [];
+            for (let y = 0; y < CANVAS_HEIGHT + 50; y += 40) {
+                for (let x = 0; x < CANVAS_WIDTH + 50; x += 40) {
+                    state.baseAtoms.push({
+                        x: x + (Math.random() - 0.5) * 10,
+                        y: y + (Math.random() - 0.5) * 10,
+                        offset: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+        }
+
+        function updateActiveAtoms() {
+            state.activeAtoms = [];
+            if (state.barrierType === 'none') return;
+
+            let spacingX = 50;
+            let spacingY = 50;
+            let radius = 10;
+            let jitter = 0;
+            let rowOffset = false; 
+            
+            if (state.barrierType === 'paper') { 
+                spacingX = 55; spacingY = 55; radius = 12; jitter = 15; rowOffset = false;
+            }
+            if (state.barrierType === 'aluminum') { 
+                spacingX = 40; spacingY = 40; radius = 14; jitter = 2; rowOffset = true;
+            }
+            if (state.barrierType === 'lead') { 
+                spacingX = 22; spacingY = 22; radius = 16; jitter = 1; rowOffset = true;
+            }
+
+            for (let y = 0; y < CANVAS_HEIGHT + 50; y += spacingY) {
+                let rOffset = (rowOffset && (y / spacingY) % 2 === 0) ? spacingX / 2 : 0;
+                for (let x = ATOMIC_BOUNDS.start; x < ATOMIC_BOUNDS.end; x += spacingX) {
+                    state.activeAtoms.push({
+                        x: x + rOffset + (Math.random()-0.5)*jitter,
+                        y: y + (Math.random()-0.5)*jitter,
+                        offset: Math.random() * Math.PI * 2,
+                        radius: radius,
+                        flash: 0 
+                    });
+                }
+            }
+        }
+
         function updatePhysicsDesc() {
             physicsDescEl.textContent = CONFIG[state.radiationType].desc;
         }
 
         function updateUnitDisplay() {
             const unitData = UNITS[state.selectedUnit];
+            const isDark = state.theme === 'dark';
+            
             metricLabelEl.textContent = unitData.label;
             metricNameEl.textContent = unitData.name;
-            metricValueEl.classList.remove('text-green-400', 'text-blue-400', 'text-yellow-400', 'text-orange-400');
-            metricValueEl.classList.add(unitData.color.split(' ')[0]);
+            
+            metricValueEl.className = `text-3xl font-mono font-bold leading-none ${isDark ? unitData.darkColorClass : unitData.colorClass}`;
         }
 
         function togglePlay() {
@@ -419,94 +611,58 @@
             metricValueEl.textContent = displayVal;
         }
 
-        // --- SIMULATION LOGIC ---
-
         function spawnParticle() {
             const config = CONFIG[state.radiationType];
-            
             if (state.viewMode === 'lab') {
                 const spawnY = CANVAS_HEIGHT / 2 + (Math.random() - 0.5) * 40;
                 state.particles.push({
-                    x: 85,
-                    y: spawnY,
-                    vx: config.speed,
-                    type: state.radiationType,
-                    active: true,
-                    waveOffset: Math.random() * 100
+                    x: 85, y: spawnY, vx: config.speed, type: state.radiationType, active: true, waveOffset: Math.random() * 100
                 });
             } else {
                 const spawnY = Math.random() * CANVAS_HEIGHT;
                 const speed = state.radiationType === 'gamma' ? 3 : (state.radiationType === 'beta' ? 2 : 0.8);
                 state.particles.push({
-                    x: 0,
-                    y: spawnY,
-                    vx: speed,
-                    type: state.radiationType,
-                    active: true,
-                    waveOffset: Math.random() * 100
+                    x: 0, y: spawnY, vx: speed, type: state.radiationType, active: true, waveOffset: Math.random() * 100
                 });
             }
         }
 
         function checkCollision(particle, drawY) {
-            // --- LAB MODE ---
             if (state.viewMode === 'lab') {
                 if (state.barrierType === 'none') return null;
                 const barrierConfig = BARRIERS[state.barrierType];
                 if (particle.x >= BARRIER_X - barrierConfig.width/2 && 
                     particle.x <= BARRIER_X + barrierConfig.width/2) {
                     const rate = LAB_RATES[particle.type][state.barrierType];
-                    if (Math.random() < rate) return { x: particle.x, y: drawY }; // Generic hit
+                    if (Math.random() < rate) return { x: particle.x, y: drawY };
                 }
                 return null;
-            } 
-            
-            // --- ATOMIC MODE ---
-            else {
+            } else {
                 if (state.barrierType === 'none') return null;
-
-                // Only interact if inside atomic bounds
                 if (particle.x < ATOMIC_BOUNDS.start || particle.x > ATOMIC_BOUNDS.end) return null;
 
-                // Physics Properties per Particle Type
                 let hitRadius = 15;
                 let captureProb = 0.5;
 
                 if (particle.type === 'alpha') { 
                     hitRadius = 25;   
-                    // Adjusted for Paper to allow approx 1 in 100 through
-                    if (state.barrierType === 'paper') {
-                        captureProb = 0.38; 
-                    } else {
-                        captureProb = 0.8; // Aluminum/Lead stops it cold
-                    }
+                    if (state.barrierType === 'paper') captureProb = 0.38; else captureProb = 0.8; 
                 } else if (particle.type === 'beta') {
                     hitRadius = 18;
-                    // Beta passes paper easily, blocked by denser stuff
-                    if (state.barrierType === 'paper') {
-                        captureProb = 0.05; 
-                    } else {
-                        captureProb = 0.6;
-                    }
+                    if (state.barrierType === 'paper') captureProb = 0.05; else captureProb = 0.6;
                 } else if (particle.type === 'gamma') {
-                    hitRadius = 8;    
-                    captureProb = 0.08; 
+                    hitRadius = 8; captureProb = 0.08; 
                 }
 
-                // Check against specific atoms
                 for (let atom of state.activeAtoms) {
-                    // Optimized: simple box check before distance calc
                     if (Math.abs(particle.x - atom.x) < hitRadius && Math.abs(drawY - atom.y) < hitRadius) {
                         const dx = particle.x - atom.x;
                         const dy = drawY - atom.y;
                         const dist = Math.sqrt(dx*dx + dy*dy);
-
                         if (dist < hitRadius) {
-                            // We are close enough to interact!
                             if (Math.random() < captureProb) {
-                                // HIT!
-                                atom.flash = 10; // Trigger flash animation on atom
-                                return { x: atom.x, y: atom.y }; // Return hit location
+                                atom.flash = 10;
+                                return { x: atom.x, y: atom.y };
                             }
                         }
                     }
@@ -517,12 +673,13 @@
 
         function drawLabView() {
             const sourceY = CANVAS_HEIGHT / 2;
+            const themeColors = THEME[state.theme];
 
             // --- DRAW EMITTER ---
             const gradBody = ctx.createLinearGradient(0, sourceY - 50, 0, sourceY + 50);
-            gradBody.addColorStop(0, '#2a2a2a');
+            gradBody.addColorStop(0, themeColors.emitterBody);
             gradBody.addColorStop(0.5, '#4a4a4a');
-            gradBody.addColorStop(1, '#2a2a2a');
+            gradBody.addColorStop(1, themeColors.emitterBody);
             ctx.fillStyle = gradBody;
             roundRect(ctx, 10, sourceY - 45, 70, 90, 10);
             ctx.fill();
@@ -572,11 +729,12 @@
             // --- DRAW BARRIER ---
             if (state.barrierType !== 'none') {
                 const b = BARRIERS[state.barrierType];
-                ctx.fillStyle = b.color;
+                ctx.fillStyle = b.colors[state.theme];
                 ctx.fillRect(BARRIER_X - b.width/2, 100, b.width, 200);
-                ctx.fillStyle = 'rgba(0,0,0,0.3)';
-                ctx.fillRect(BARRIER_X + b.width/2, 100, 10, 200);
+                ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                ctx.fillRect(BARRIER_X + b.width/2, 100, 10, 200); 
                 
+                ctx.fillStyle = b.colors[state.theme]; 
                 ctx.beginPath();
                 ctx.moveTo(BARRIER_X - b.width/2, 100);
                 ctx.lineTo(BARRIER_X + b.width/2, 100);
@@ -584,7 +742,7 @@
                 ctx.lineTo(BARRIER_X - b.width/2 + 10, 90);
                 ctx.fill();
                 
-                ctx.fillStyle = '#FFF';
+                ctx.fillStyle = state.theme === 'dark' ? '#fff' : '#1e293b';
                 ctx.font = '14px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText(b.label, BARRIER_X, 80);
@@ -596,9 +754,9 @@
             ctx.fillRect(DETECTOR_X + 5, sourceY + 95, 40, 5);
 
             const probeGrad = ctx.createLinearGradient(DETECTOR_X, sourceY - 25, DETECTOR_X, sourceY + 25);
-            probeGrad.addColorStop(0, '#222');
+            probeGrad.addColorStop(0, themeColors.detectorFill);
             probeGrad.addColorStop(0.3, '#555');
-            probeGrad.addColorStop(1, '#222');
+            probeGrad.addColorStop(1, themeColors.detectorFill);
             ctx.fillStyle = probeGrad;
             ctx.fillRect(DETECTOR_X, sourceY - 25, 80, 50);
 
@@ -619,8 +777,8 @@
             // Flash Effect
             if (Date.now() - state.lastHitTime < 100) {
                 ctx.shadowBlur = 15;
-                ctx.shadowColor = '#FF5252';
-                ctx.fillStyle = 'rgba(255, 82, 82, 0.8)';
+                ctx.shadowColor = '#ef4444';
+                ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
                 ctx.beginPath();
                 ctx.ellipse(DETECTOR_X, sourceY, 8, 23, 0, 0, Math.PI*2);
                 ctx.fill();
@@ -636,14 +794,16 @@
         }
 
         function drawAtomicView(timestamp) {
-            // Draw Background Lattice
+            const themeColors = THEME[state.theme];
+
+            // Background
+            ctx.fillStyle = themeColors.canvasBg;
+            ctx.fillRect(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
+
             if (state.barrierType === 'none') {
-                // Vacuum / Space particles
-                ctx.fillStyle = '#1e293b'; // Dark background
-                ctx.fillRect(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
-                ctx.fillStyle = '#334155';
+                ctx.fillStyle = BARRIERS.none.atomicColors[state.theme];
                 state.baseAtoms.forEach((atom, i) => {
-                    if (i % 20 === 0) { // Sparse
+                    if (i % 20 === 0) { 
                         ctx.beginPath();
                         ctx.arc(atom.x, atom.y, 1, 0, Math.PI*2);
                         ctx.fill();
@@ -651,43 +811,36 @@
                 });
             } else {
                 const config = BARRIERS[state.barrierType];
-                ctx.fillStyle = '#0f172a'; // Deep background
-                ctx.fillRect(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
                 
-                // --- ATOMIC BARRIER BLOCK ---
-                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.strokeStyle = state.theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
                 ctx.beginPath();
                 ctx.moveTo(ATOMIC_BOUNDS.start, 0); ctx.lineTo(ATOMIC_BOUNDS.start, CANVAS_HEIGHT);
                 ctx.moveTo(ATOMIC_BOUNDS.end, 0); ctx.lineTo(ATOMIC_BOUNDS.end, CANVAS_HEIGHT);
                 ctx.stroke();
 
-                // Draw Active Atoms
                 state.activeAtoms.forEach((atom, i) => {
                     const pulse = Math.sin(timestamp * 0.005 + atom.offset) * 2;
                     
-                    // Flash Logic
                     if (atom.flash > 0) {
-                        ctx.fillStyle = '#FFFFFF'; // Bright flash!
-                        ctx.shadowColor = '#FFFFFF';
-                        ctx.shadowBlur = 10;
+                        ctx.fillStyle = '#f59e0b'; // Amber
+                        ctx.shadowColor = '#f59e0b';
+                        ctx.shadowBlur = 15;
                         atom.flash--;
                     } else {
-                        ctx.fillStyle = config.atomicColor;
+                        ctx.fillStyle = config.atomicColors[state.theme];
                         ctx.shadowBlur = 0;
                     }
                     
-                    // Cloud
                     ctx.globalAlpha = atom.flash > 0 ? 0.8 : 0.2;
                     ctx.beginPath();
                     ctx.arc(atom.x, atom.y, atom.radius + 5 + pulse, 0, Math.PI*2);
                     ctx.fill();
                     
-                    // Nucleus
                     ctx.globalAlpha = 1.0;
                     ctx.beginPath();
                     ctx.arc(atom.x, atom.y, atom.radius * 0.4, 0, Math.PI*2);
                     ctx.fill();
-                    ctx.shadowBlur = 0; // Reset
+                    ctx.shadowBlur = 0;
                 });
             }
         }
@@ -709,8 +862,16 @@
 
             // Clear Canvas
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const themeColors = THEME[state.theme];
 
-            // Draw Background/Static Elements
+            // Draw Background
+            if (state.viewMode === 'lab') {
+                // Clear to transparent (let CSS handle bg) or draw explicit bg
+                // Because CSS handles the container, we just clear and draw elements.
+                // But for Lab view we want to make sure the emitter/detector sit on the right color
+                // Actually the canvas is transparent by default but let's ensure cleanup
+            }
+
             if (state.viewMode === 'lab') {
                 drawLabView();
             } else {
@@ -728,27 +889,21 @@
 
                 p.x += p.vx;
 
-                // Wave movement for Gamma
                 let drawY = p.y;
                 if (p.type === 'gamma') {
                     drawY = p.y + Math.sin((p.x + p.waveOffset) * 0.1) * 5;
                 }
 
-                // Check Collision
                 const hit = checkCollision(p, drawY);
                 if (hit) {
                     p.active = false;
-                    
-                    // Collision Visual
-                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                    ctx.fillStyle = state.theme === 'dark' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(100, 116, 139, 0.8)';
                     ctx.beginPath();
-                    // Larger explosion in atomic mode
                     const r = state.viewMode === 'atomic' ? 20 : (p.type === 'alpha' ? 10 : 5);
                     ctx.arc(hit.x, hit.y, r, 0, Math.PI*2);
                     ctx.fill();
                 }
 
-                // Lab Mode Detector Logic
                 if (state.viewMode === 'lab') {
                     if (p.x >= DETECTOR_X - 5) { 
                         p.active = false;
@@ -756,12 +911,9 @@
                         state.totalCount += 1;
                         state.lastHitTime = Date.now();
                     }
-                } 
-                // Atomic Mode "Pass Through" Logic
-                else {
+                } else {
                     if (p.x > CANVAS_WIDTH) {
                         p.active = false;
-                        // In atomic mode, passing off screen counts as a "hit" (passed through material)
                         state.hitHistory.push(Date.now());
                         state.totalCount += 1;
                     }
@@ -769,15 +921,12 @@
 
                 if (p.x > CANVAS_WIDTH + 20) p.active = false;
 
-                // Draw Particle
                 if (p.active) {
                     const pConfig = CONFIG[p.type];
-                    ctx.fillStyle = pConfig.color;
+                    ctx.fillStyle = pConfig.colors[state.theme];
                     
                     if (p.type === 'alpha') {
-                        // Atomic view scales particle size up slightly for visibility
                         const scale = state.viewMode === 'atomic' ? 1.5 : 1;
-                        
                         ctx.beginPath();
                         ctx.arc(p.x - 3*scale, drawY - 3*scale, 3*scale, 0, Math.PI*2);
                         ctx.arc(p.x + 3*scale, drawY - 3*scale, 3*scale, 0, Math.PI*2);
@@ -785,7 +934,7 @@
                         ctx.arc(p.x + 3*scale, drawY + 3*scale, 3*scale, 0, Math.PI*2);
                         ctx.fill();
                     } else if (p.type === 'gamma') {
-                        ctx.strokeStyle = pConfig.color;
+                        ctx.strokeStyle = pConfig.colors[state.theme];
                         ctx.lineWidth = state.viewMode === 'atomic' ? 3 : 2;
                         ctx.beginPath();
                         ctx.moveTo(p.x - 10, drawY);
