@@ -7,21 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 4px;
-        }
-        body {
-            background-color: #0f172a; /* slate-900 */
-            color: white;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        body { background-color: #0f172a; color: white; }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen font-sans p-4">
@@ -40,7 +29,7 @@
             
             <div class="flex flex-col items-end gap-2 w-full md:w-auto">
                 <div class="flex items-center gap-4 bg-slate-900 px-5 py-3 rounded-xl border border-slate-700 shadow-inner justify-between w-full md:w-auto">
-                    
+                    <!-- Metric Display -->
                     <div class="flex flex-col items-end min-w-[140px]">
                         <div class="flex items-end gap-2">
                             <span id="metric-value" class="text-4xl font-mono font-bold leading-none text-green-400">0</span>
@@ -50,50 +39,61 @@
                             Counts Per Minute
                         </div>
                     </div>
-
                     <div class="h-10 w-px bg-slate-700 mx-2"></div>
-
                     <button id="btn-reset" class="p-2 hover:bg-slate-800 rounded-full transition-colors group" title="Reset Counter">
                         <i data-lucide="rotate-ccw" class="w-5 h-5 text-slate-500 group-hover:text-slate-300"></i>
                     </button>
                 </div>
-
                 <!-- Unit Selector -->
-                <div class="flex bg-slate-900 rounded-lg p-1 border border-slate-700 gap-1" id="unit-selector">
-                    <!-- Buttons injected via JS -->
-                </div>
+                <div class="flex bg-slate-900 rounded-lg p-1 border border-slate-700 gap-1" id="unit-selector"></div>
+            </div>
+        </div>
+
+        <!-- Toolbar / View Toggle -->
+        <div class="bg-slate-900 border-b border-slate-700 px-6 py-2 flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Simulation View</span>
+            <div class="flex bg-slate-800 rounded-lg p-1 border border-slate-600">
+                <button id="btn-view-lab" class="px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm">
+                    <i data-lucide="flask-conical" class="w-3 h-3"></i> Lab View
+                </button>
+                <button id="btn-view-atomic" class="px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i data-lucide="microscope" class="w-3 h-3"></i> Atomic View
+                </button>
             </div>
         </div>
 
         <!-- Main Canvas Area -->
-        <div class="relative bg-black w-full h-[400px] border-b border-slate-700 shadow-inner">
+        <div class="relative bg-black w-full h-[400px] border-b border-slate-700 shadow-inner overflow-hidden">
             <canvas id="simCanvas" width="800" height="400" class="w-full h-full object-contain"></canvas>
             
             <!-- Legend Overlay -->
-            <div class="absolute top-4 left-4 bg-slate-900/80 backdrop-blur p-3 rounded-lg border border-slate-700 text-xs shadow-lg">
+            <div id="legend-overlay" class="absolute top-4 left-4 bg-slate-900/80 backdrop-blur p-3 rounded-lg border border-slate-700 text-xs shadow-lg transition-opacity duration-300">
                 <div class="flex items-center gap-2 mb-1">
-                    <span class="w-3 h-3 rounded-full bg-[#FF5252]"></span> Alpha (Blocked by Paper)
+                    <span class="w-3 h-3 rounded-full bg-[#FF5252]"></span> Alpha
                 </div>
                 <div class="flex items-center gap-2 mb-1">
-                    <span class="w-3 h-3 rounded-full bg-[#448AFF]"></span> Beta (Blocked by Alum.)
+                    <span class="w-3 h-3 rounded-full bg-[#448AFF]"></span> Beta
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-[#69F0AE]"></span> Gamma (Attenuated by Lead)
+                    <span class="w-3 h-3 rounded-full bg-[#69F0AE]"></span> Gamma
                 </div>
+            </div>
+
+            <!-- Atomic Label Overlay (Hidden in Lab Mode) -->
+            <div id="atomic-label" class="absolute bottom-4 right-4 bg-slate-900/80 backdrop-blur p-3 rounded-lg border border-slate-700 text-right opacity-0 transition-opacity duration-300 pointer-events-none">
+                <div class="text-xl font-bold text-indigo-400" id="atomic-material-name">Vacuum</div>
+                <div class="text-xs text-slate-400">Magnification: 10,000,000x</div>
             </div>
         </div>
 
         <!-- Controls -->
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-800">
-            
             <!-- Source Selection -->
             <div>
                 <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <i data-lucide="radio" class="w-4 h-4"></i> Radiation Source
                 </h3>
-                <div class="flex gap-2" id="source-controls">
-                    <!-- Buttons injected via JS -->
-                </div>
+                <div class="flex gap-2" id="source-controls"></div>
                 <div class="mt-3 p-3 bg-slate-900/50 rounded-lg border border-slate-700 min-h-[80px]">
                     <p class="text-sm text-slate-300">
                         <span class="font-bold text-indigo-400">Physics:</span> <span id="physics-desc"></span>
@@ -106,9 +106,7 @@
                 <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <i data-lucide="shield" class="w-4 h-4"></i> Shielding Material
                 </h3>
-                <div class="grid grid-cols-4 gap-2" id="barrier-controls">
-                    <!-- Buttons injected via JS -->
-                </div>
+                <div class="grid grid-cols-4 gap-2" id="barrier-controls"></div>
                 <div class="mt-3 flex gap-2">
                     <button id="btn-play-pause" class="flex-1 flex items-center justify-center gap-2 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg border border-slate-600 text-slate-200 transition-colors">
                         <i data-lucide="pause" class="w-4 h-4" id="play-icon"></i>
@@ -116,7 +114,6 @@
                     </button>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -153,10 +150,10 @@
         };
 
         const BARRIERS = {
-            none: { width: 0, color: 'transparent', label: 'None' },
-            paper: { width: 5, color: '#FFFFFF', label: 'Paper' },
-            aluminum: { width: 15, color: '#90A4AE', label: 'Aluminum' },
-            lead: { width: 40, color: '#37474F', label: 'Lead' }
+            none: { width: 0, color: 'transparent', label: 'None', atomicColor: '#1e293b' },
+            paper: { width: 5, color: '#FFFFFF', label: 'Paper', atomicColor: '#a8a29e' },
+            aluminum: { width: 15, color: '#90A4AE', label: 'Aluminum', atomicColor: '#94a3b8' },
+            lead: { width: 40, color: '#37474F', label: 'Lead', atomicColor: '#475569' }
         };
 
         const UNITS = {
@@ -166,14 +163,22 @@
             mrh: { label: 'mR/h', name: 'Milliroentgens/hr', color: 'text-orange-400' }
         };
 
-        const ABSORPTION_RATES = {
-            alpha: { paper: 0.8, aluminum: 1.0, lead: 1.0 },
+        // Lab View: Chance per frame to stop
+        const LAB_RATES = {
+            alpha: { paper: 0.72, aluminum: 1.0, lead: 1.0 }, // Reduced from 0.8 to allow ~1% pass
             beta: { paper: 0.05, aluminum: 0.5, lead: 1.0 },
             gamma: { paper: 0.0, aluminum: 0.05, lead: 0.35 }
         };
 
+        // Atomic View Boundaries
+        const ATOMIC_BOUNDS = {
+            start: 200,
+            end: 600
+        };
+
         // --- STATE ---
         let state = {
+            viewMode: 'lab', // 'lab' or 'atomic'
             radiationType: 'alpha',
             barrierType: 'none',
             isPlaying: true,
@@ -181,8 +186,10 @@
             particles: [],
             lastSpawnTime: 0,
             lastHitTime: 0,
-            hitHistory: [], // Timestamps
-            totalCount: 0
+            hitHistory: [],
+            totalCount: 0,
+            baseAtoms: [],    // The underlying grid points
+            activeAtoms: []   // The specific atoms currently rendered (with flash state)
         };
 
         // --- DOM ELEMENTS ---
@@ -192,6 +199,8 @@
         const metricLabelEl = document.getElementById('metric-label');
         const metricNameEl = document.getElementById('metric-name');
         const physicsDescEl = document.getElementById('physics-desc');
+        const atomicLabelEl = document.getElementById('atomic-label');
+        const atomicMaterialNameEl = document.getElementById('atomic-material-name');
         
         // Constants
         const BARRIER_X = 400;
@@ -206,13 +215,99 @@
             updatePhysicsDesc();
             updateUnitDisplay();
             
+            generateBaseAtoms(); 
+            updateActiveAtoms(); // Populate initial active atoms
+            
             // Start Loops
             requestAnimationFrame(gameLoop);
             setInterval(updateMetrics, 200);
 
-            // Play/Pause Listener
+            // Listeners
             document.getElementById('btn-play-pause').addEventListener('click', togglePlay);
             document.getElementById('btn-reset').addEventListener('click', resetCounter);
+            
+            // View Mode Toggles
+            document.getElementById('btn-view-lab').addEventListener('click', () => setViewMode('lab'));
+            document.getElementById('btn-view-atomic').addEventListener('click', () => setViewMode('atomic'));
+        }
+
+        function setViewMode(mode) {
+            state.viewMode = mode;
+            
+            const btnLab = document.getElementById('btn-view-lab');
+            const btnAtomic = document.getElementById('btn-view-atomic');
+            
+            if (mode === 'lab') {
+                btnLab.className = "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm";
+                btnAtomic.className = "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 text-slate-400 hover:text-white";
+                atomicLabelEl.classList.add('opacity-0');
+            } else {
+                btnLab.className = "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 text-slate-400 hover:text-white";
+                btnAtomic.className = "px-4 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm";
+                atomicLabelEl.classList.remove('opacity-0');
+                updateAtomicLabel();
+            }
+            
+            // Clear particles when switching to avoid visual glitches
+            state.particles = [];
+        }
+
+        function updateAtomicLabel() {
+            atomicMaterialNameEl.textContent = state.barrierType === 'none' ? 'Vacuum' : BARRIERS[state.barrierType].label + ' Lattice';
+        }
+
+        // --- ATOMIC GENERATION ---
+        function generateBaseAtoms() {
+            state.baseAtoms = [];
+            // Generate a dense grid of points covering the canvas
+            for (let y = 0; y < CANVAS_HEIGHT + 50; y += 40) {
+                for (let x = 0; x < CANVAS_WIDTH + 50; x += 40) {
+                    state.baseAtoms.push({
+                        x: x + (Math.random() - 0.5) * 10,
+                        y: y + (Math.random() - 0.5) * 10,
+                        offset: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+        }
+
+        function updateActiveAtoms() {
+            state.activeAtoms = [];
+            
+            // If Vacuum, no atoms in the lattice zone
+            if (state.barrierType === 'none') return;
+
+            // Density Configuration
+            let spacingX = 50;
+            let spacingY = 50;
+            let radius = 10;
+            let jitter = 0;
+            let rowOffset = false; // For hexagonal packing look
+            
+            if (state.barrierType === 'paper') { 
+                spacingX = 55; spacingY = 55; radius = 12; jitter = 15; rowOffset = false;
+            }
+            if (state.barrierType === 'aluminum') { 
+                spacingX = 40; spacingY = 40; radius = 14; jitter = 2; rowOffset = true;
+            }
+            if (state.barrierType === 'lead') { 
+                spacingX = 22; spacingY = 22; radius = 16; jitter = 1; rowOffset = true;
+            }
+
+            // Generate atoms specifically for the barrier zone
+            for (let y = 0; y < CANVAS_HEIGHT + 50; y += spacingY) {
+                let rOffset = (rowOffset && (y / spacingY) % 2 === 0) ? spacingX / 2 : 0;
+                
+                for (let x = ATOMIC_BOUNDS.start; x < ATOMIC_BOUNDS.end; x += spacingX) {
+                    state.activeAtoms.push({
+                        x: x + rOffset + (Math.random()-0.5)*jitter,
+                        y: y + (Math.random()-0.5)*jitter,
+                        offset: Math.random() * Math.PI * 2,
+                        radius: radius,
+                        flash: 0 
+                    });
+                }
+            }
         }
 
         // --- UI RENDERING ---
@@ -227,7 +322,7 @@
                 btn.onclick = () => {
                     state.radiationType = type;
                     updatePhysicsDesc();
-                    renderControls(); // Re-render to update active state
+                    renderControls();
                 };
                 sourceContainer.appendChild(btn);
             });
@@ -248,12 +343,14 @@
                 
                 btn.onclick = () => {
                     state.barrierType = key;
+                    updateActiveAtoms(); // Refresh the atom grid
                     renderControls();
+                    updateAtomicLabel();
                 };
                 barrierContainer.appendChild(btn);
             });
 
-            // Unit Selector Buttons
+            // Unit Selector
             const unitContainer = document.getElementById('unit-selector');
             unitContainer.innerHTML = '';
             Object.keys(UNITS).forEach(unit => {
@@ -268,7 +365,7 @@
                 unitContainer.appendChild(btn);
             });
 
-            // Play/Pause Button
+            // Play/Pause
             const playIcon = document.getElementById('play-icon');
             const playText = document.getElementById('play-text');
             if(state.isPlaying) {
@@ -289,107 +386,136 @@
             const unitData = UNITS[state.selectedUnit];
             metricLabelEl.textContent = unitData.label;
             metricNameEl.textContent = unitData.name;
-            
-            // Remove old color classes
             metricValueEl.classList.remove('text-green-400', 'text-blue-400', 'text-yellow-400', 'text-orange-400');
-            // Add new color class
-            metricValueEl.classList.add(unitData.color.split(' ')[0]); // Extract class name
+            metricValueEl.classList.add(unitData.color.split(' ')[0]);
         }
 
         function togglePlay() {
             state.isPlaying = !state.isPlaying;
             renderControls();
-            if(state.isPlaying) {
-                requestAnimationFrame(gameLoop);
-            }
+            if(state.isPlaying) requestAnimationFrame(gameLoop);
         }
 
         function resetCounter() {
             state.totalCount = 0;
             state.hitHistory = [];
-            updateMetrics(); // Immediate update
+            updateMetrics();
         }
-
-        // --- SIMULATION LOGIC ---
 
         function updateMetrics() {
             const now = Date.now();
             const WINDOW_MS = 3000;
-
-            // Prune old hits
             state.hitHistory = state.hitHistory.filter(t => now - t < WINDOW_MS);
-
             const hitsInWindow = state.hitHistory.length;
             const cpm = Math.round((hitsInWindow / (WINDOW_MS / 1000)) * 60);
             
             let displayVal = 0;
-
             switch(state.selectedUnit) {
-                case 'cpm':
-                    displayVal = cpm;
-                    break;
-                case 'cps':
-                    displayVal = (hitsInWindow / (WINDOW_MS / 1000)).toFixed(1);
-                    break;
-                case 'uSv':
-                    displayVal = (cpm / 150).toFixed(2);
-                    break;
-                case 'mrh':
-                    displayVal = (cpm / 1200).toFixed(3);
-                    break;
+                case 'cpm': displayVal = cpm; break;
+                case 'cps': displayVal = (hitsInWindow / (WINDOW_MS / 1000)).toFixed(1); break;
+                case 'uSv': displayVal = (cpm / 150).toFixed(2); break;
+                case 'mrh': displayVal = (cpm / 1200).toFixed(3); break;
             }
-
             metricValueEl.textContent = displayVal;
         }
 
+        // --- SIMULATION LOGIC ---
+
         function spawnParticle() {
             const config = CONFIG[state.radiationType];
-            const spawnY = CANVAS_HEIGHT / 2 + (Math.random() - 0.5) * 40;
             
-            state.particles.push({
-                x: 85,
-                y: spawnY,
-                vx: config.speed,
-                type: state.radiationType,
-                active: true,
-                waveOffset: Math.random() * 100,
-                id: Date.now() + Math.random()
-            });
-        }
-
-        function checkCollision(particle) {
-            if (state.barrierType === 'none') return false;
-            
-            const barrierConfig = BARRIERS[state.barrierType];
-            
-            if (particle.x >= BARRIER_X - barrierConfig.width/2 && 
-                particle.x <= BARRIER_X + barrierConfig.width/2) {
-                
-                const rate = ABSORPTION_RATES[particle.type][state.barrierType];
-                if (Math.random() < rate) return true;
+            if (state.viewMode === 'lab') {
+                const spawnY = CANVAS_HEIGHT / 2 + (Math.random() - 0.5) * 40;
+                state.particles.push({
+                    x: 85,
+                    y: spawnY,
+                    vx: config.speed,
+                    type: state.radiationType,
+                    active: true,
+                    waveOffset: Math.random() * 100
+                });
+            } else {
+                const spawnY = Math.random() * CANVAS_HEIGHT;
+                const speed = state.radiationType === 'gamma' ? 3 : (state.radiationType === 'beta' ? 2 : 0.8);
+                state.particles.push({
+                    x: 0,
+                    y: spawnY,
+                    vx: speed,
+                    type: state.radiationType,
+                    active: true,
+                    waveOffset: Math.random() * 100
+                });
             }
-            return false;
         }
 
-        // Draw Helper
-        function roundRect(ctx, x, y, w, h, r) {
-            if (w < 2 * r) r = w / 2;
-            if (h < 2 * r) r = h / 2;
-            ctx.beginPath();
-            ctx.moveTo(x + r, y);
-            ctx.arcTo(x + w, y, x + w, y + h, r);
-            ctx.arcTo(x + w, y + h, x, y + h, r);
-            ctx.arcTo(x, y + h, x, y, r);
-            ctx.arcTo(x, y, x + w, y, r);
-            ctx.closePath();
+        function checkCollision(particle, drawY) {
+            // --- LAB MODE ---
+            if (state.viewMode === 'lab') {
+                if (state.barrierType === 'none') return null;
+                const barrierConfig = BARRIERS[state.barrierType];
+                if (particle.x >= BARRIER_X - barrierConfig.width/2 && 
+                    particle.x <= BARRIER_X + barrierConfig.width/2) {
+                    const rate = LAB_RATES[particle.type][state.barrierType];
+                    if (Math.random() < rate) return { x: particle.x, y: drawY }; // Generic hit
+                }
+                return null;
+            } 
+            
+            // --- ATOMIC MODE ---
+            else {
+                if (state.barrierType === 'none') return null;
+
+                // Only interact if inside atomic bounds
+                if (particle.x < ATOMIC_BOUNDS.start || particle.x > ATOMIC_BOUNDS.end) return null;
+
+                // Physics Properties per Particle Type
+                let hitRadius = 15;
+                let captureProb = 0.5;
+
+                if (particle.type === 'alpha') { 
+                    hitRadius = 25;   
+                    // Adjusted for Paper to allow approx 1 in 100 through
+                    if (state.barrierType === 'paper') {
+                        captureProb = 0.38; 
+                    } else {
+                        captureProb = 0.8; // Aluminum/Lead stops it cold
+                    }
+                } else if (particle.type === 'beta') {
+                    hitRadius = 18;
+                    // Beta passes paper easily, blocked by denser stuff
+                    if (state.barrierType === 'paper') {
+                        captureProb = 0.05; 
+                    } else {
+                        captureProb = 0.6;
+                    }
+                } else if (particle.type === 'gamma') {
+                    hitRadius = 8;    
+                    captureProb = 0.08; 
+                }
+
+                // Check against specific atoms
+                for (let atom of state.activeAtoms) {
+                    // Optimized: simple box check before distance calc
+                    if (Math.abs(particle.x - atom.x) < hitRadius && Math.abs(drawY - atom.y) < hitRadius) {
+                        const dx = particle.x - atom.x;
+                        const dy = drawY - atom.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+
+                        if (dist < hitRadius) {
+                            // We are close enough to interact!
+                            if (Math.random() < captureProb) {
+                                // HIT!
+                                atom.flash = 10; // Trigger flash animation on atom
+                                return { x: atom.x, y: atom.y }; // Return hit location
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
         }
 
-        function gameLoop(timestamp) {
-            if (!state.isPlaying) return;
-
-            // Clear
-            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
+        function drawLabView() {
             const sourceY = CANVAS_HEIGHT / 2;
 
             // --- DRAW EMITTER ---
@@ -401,7 +527,6 @@
             roundRect(ctx, 10, sourceY - 45, 70, 90, 10);
             ctx.fill();
 
-            // Hazard Stripes
             ctx.save();
             ctx.clip();
             ctx.fillStyle = '#EAB308';
@@ -417,7 +542,6 @@
             }
             ctx.restore();
 
-            // Nozzle
             const gradNozzle = ctx.createLinearGradient(60, sourceY, 90, sourceY);
             gradNozzle.addColorStop(0, '#333');
             gradNozzle.addColorStop(1, '#111');
@@ -428,13 +552,11 @@
             ctx.lineTo(95, sourceY + 12);
             ctx.lineTo(75, sourceY + 20);
             ctx.fill();
-            
             ctx.fillStyle = '#000';
             ctx.beginPath();
             ctx.ellipse(95, sourceY, 5, 12, 0, 0, Math.PI*2);
             ctx.fill();
 
-            // Trefoil
             ctx.fillStyle = '#000';
             ctx.beginPath();
             ctx.arc(45, sourceY, 5, 0, Math.PI * 2);
@@ -455,7 +577,6 @@
                 ctx.fillStyle = 'rgba(0,0,0,0.3)';
                 ctx.fillRect(BARRIER_X + b.width/2, 100, 10, 200);
                 
-                // Top Edge
                 ctx.beginPath();
                 ctx.moveTo(BARRIER_X - b.width/2, 100);
                 ctx.lineTo(BARRIER_X + b.width/2, 100);
@@ -486,7 +607,6 @@
             ctx.ellipse(DETECTOR_X, sourceY, 10, 25, 0, Math.PI/2, Math.PI*1.5);
             ctx.fill();
             
-            // Mesh
             ctx.strokeStyle = '#444';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -507,13 +627,95 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Cable
             ctx.strokeStyle = '#111';
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.moveTo(DETECTOR_X + 80, sourceY);
             ctx.bezierCurveTo(DETECTOR_X + 100, sourceY, DETECTOR_X + 100, sourceY + 100, DETECTOR_X + 120, sourceY + 100);
             ctx.stroke();
+        }
+
+        function drawAtomicView(timestamp) {
+            // Draw Background Lattice
+            if (state.barrierType === 'none') {
+                // Vacuum / Space particles
+                ctx.fillStyle = '#1e293b'; // Dark background
+                ctx.fillRect(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
+                ctx.fillStyle = '#334155';
+                state.baseAtoms.forEach((atom, i) => {
+                    if (i % 20 === 0) { // Sparse
+                        ctx.beginPath();
+                        ctx.arc(atom.x, atom.y, 1, 0, Math.PI*2);
+                        ctx.fill();
+                    }
+                });
+            } else {
+                const config = BARRIERS[state.barrierType];
+                ctx.fillStyle = '#0f172a'; // Deep background
+                ctx.fillRect(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
+                
+                // --- ATOMIC BARRIER BLOCK ---
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.beginPath();
+                ctx.moveTo(ATOMIC_BOUNDS.start, 0); ctx.lineTo(ATOMIC_BOUNDS.start, CANVAS_HEIGHT);
+                ctx.moveTo(ATOMIC_BOUNDS.end, 0); ctx.lineTo(ATOMIC_BOUNDS.end, CANVAS_HEIGHT);
+                ctx.stroke();
+
+                // Draw Active Atoms
+                state.activeAtoms.forEach((atom, i) => {
+                    const pulse = Math.sin(timestamp * 0.005 + atom.offset) * 2;
+                    
+                    // Flash Logic
+                    if (atom.flash > 0) {
+                        ctx.fillStyle = '#FFFFFF'; // Bright flash!
+                        ctx.shadowColor = '#FFFFFF';
+                        ctx.shadowBlur = 10;
+                        atom.flash--;
+                    } else {
+                        ctx.fillStyle = config.atomicColor;
+                        ctx.shadowBlur = 0;
+                    }
+                    
+                    // Cloud
+                    ctx.globalAlpha = atom.flash > 0 ? 0.8 : 0.2;
+                    ctx.beginPath();
+                    ctx.arc(atom.x, atom.y, atom.radius + 5 + pulse, 0, Math.PI*2);
+                    ctx.fill();
+                    
+                    // Nucleus
+                    ctx.globalAlpha = 1.0;
+                    ctx.beginPath();
+                    ctx.arc(atom.x, atom.y, atom.radius * 0.4, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0; // Reset
+                });
+            }
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+
+        function gameLoop(timestamp) {
+            if (!state.isPlaying) return;
+
+            // Clear Canvas
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // Draw Background/Static Elements
+            if (state.viewMode === 'lab') {
+                drawLabView();
+            } else {
+                drawAtomicView(timestamp);
+            }
 
             // --- PARTICLES ---
             if (timestamp - state.lastSpawnTime > CONFIG[state.radiationType].spawnRate) {
@@ -526,63 +728,83 @@
 
                 p.x += p.vx;
 
+                // Wave movement for Gamma
                 let drawY = p.y;
                 if (p.type === 'gamma') {
                     drawY = p.y + Math.sin((p.x + p.waveOffset) * 0.1) * 5;
                 }
 
-                if (checkCollision(p)) {
+                // Check Collision
+                const hit = checkCollision(p, drawY);
+                if (hit) {
                     p.active = false;
-                    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                    
+                    // Collision Visual
+                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
                     ctx.beginPath();
-                    ctx.arc(p.x, drawY, p.type === 'alpha' ? 10 : 5, 0, Math.PI*2);
+                    // Larger explosion in atomic mode
+                    const r = state.viewMode === 'atomic' ? 20 : (p.type === 'alpha' ? 10 : 5);
+                    ctx.arc(hit.x, hit.y, r, 0, Math.PI*2);
                     ctx.fill();
                 }
 
-                if (p.x >= DETECTOR_X - 5) { 
-                    p.active = false;
-                    state.hitHistory.push(Date.now());
-                    state.totalCount += 1;
-                    state.lastHitTime = Date.now();
+                // Lab Mode Detector Logic
+                if (state.viewMode === 'lab') {
+                    if (p.x >= DETECTOR_X - 5) { 
+                        p.active = false;
+                        state.hitHistory.push(Date.now());
+                        state.totalCount += 1;
+                        state.lastHitTime = Date.now();
+                    }
+                } 
+                // Atomic Mode "Pass Through" Logic
+                else {
+                    if (p.x > CANVAS_WIDTH) {
+                        p.active = false;
+                        // In atomic mode, passing off screen counts as a "hit" (passed through material)
+                        state.hitHistory.push(Date.now());
+                        state.totalCount += 1;
+                    }
                 }
 
-                if (p.x > CANVAS_WIDTH) p.active = false;
+                if (p.x > CANVAS_WIDTH + 20) p.active = false;
 
+                // Draw Particle
                 if (p.active) {
                     const pConfig = CONFIG[p.type];
                     ctx.fillStyle = pConfig.color;
                     
                     if (p.type === 'alpha') {
+                        // Atomic view scales particle size up slightly for visibility
+                        const scale = state.viewMode === 'atomic' ? 1.5 : 1;
+                        
                         ctx.beginPath();
-                        ctx.arc(p.x - 3, drawY - 3, 3, 0, Math.PI*2);
-                        ctx.arc(p.x + 3, drawY - 3, 3, 0, Math.PI*2);
-                        ctx.arc(p.x - 3, drawY + 3, 3, 0, Math.PI*2);
-                        ctx.arc(p.x + 3, drawY + 3, 3, 0, Math.PI*2);
+                        ctx.arc(p.x - 3*scale, drawY - 3*scale, 3*scale, 0, Math.PI*2);
+                        ctx.arc(p.x + 3*scale, drawY - 3*scale, 3*scale, 0, Math.PI*2);
+                        ctx.arc(p.x - 3*scale, drawY + 3*scale, 3*scale, 0, Math.PI*2);
+                        ctx.arc(p.x + 3*scale, drawY + 3*scale, 3*scale, 0, Math.PI*2);
                         ctx.fill();
                     } else if (p.type === 'gamma') {
                         ctx.strokeStyle = pConfig.color;
-                        ctx.lineWidth = 2;
+                        ctx.lineWidth = state.viewMode === 'atomic' ? 3 : 2;
                         ctx.beginPath();
                         ctx.moveTo(p.x - 10, drawY);
                         ctx.lineTo(p.x, drawY);
                         ctx.stroke();
                     } else {
+                        const r = state.viewMode === 'atomic' ? pConfig.radius * 1.5 : pConfig.radius;
                         ctx.beginPath();
-                        ctx.arc(p.x, drawY, pConfig.radius, 0, Math.PI*2);
+                        ctx.arc(p.x, drawY, r, 0, Math.PI*2);
                         ctx.fill();
                     }
                 }
             });
 
-            // Cleanup
             state.particles = state.particles.filter(p => p.active);
-
             requestAnimationFrame(gameLoop);
         }
 
-        // Run
         window.onload = init;
-
     </script>
 </body>
 </html>
